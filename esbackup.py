@@ -1,5 +1,4 @@
 #!venv/bin/python
-
 import settings, requests
 
 url = settings.server + ':' + str(settings.port)
@@ -15,12 +14,21 @@ def check_connection():
         exit(1)
 
 def get_snaptshops():
-    pass
+    snapthost_url = url + '/_snapshot/'+settings.repository_name+'/_all'
+    r = requests.get(snapthost_url)
+    if (200 != r.status_code):
+        print '%s returns %s' %(snapthost_url, r.status_code)
+        exit(1)
+    response = r.json()
+    if (len(response['snapshots']) > settings.snaptshops_to_store):
+        print 'Remove old snapshots'
+
+    print len(response['snapshots'])
 
 def main():
     check_connection()
     get_snaptshops()
-
+    create_snapshot()
 
 if __name__ == "__main__":
     main()
