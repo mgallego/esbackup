@@ -32,16 +32,30 @@ def create_snapshot():
         exit(1)
     print 'Created the new %s snaptshot' %(snapshot_name)
 
-def clean_snaptshots():
+def get_snapshots():
     snaptshots_url = url + '/_snapshot/'+settings.repository_name+'/_all'
     r = requests.get(snaptshots_url)
     if (200 != r.status_code):
         print '%s returns %s' %(snaptshots_url, r.status_code)
         exit(1)
+    return r.json()
+
+def delete_snapshot(snapshot_name):
+    snapshot_url = url + '/_snapshot/%s/%s?wait_for_completion=true' %(settings.repository_name, snapshot_name)
+    print snapshot_url
+    r = requests.delete(snapshot_url)
     response = r.json()
-    if (len(response['snapshots']) > settings.snaptshops_to_store):
-        print 'Remove old snapshots'
-    print len(response['snapshots'])
+    if (200 != r.status_code):
+        print '%s returns %s' %(snapshot_url, r.status_code)
+        print response
+        exit(1)
+    print 'Delete the %s snaptshot' %(snapshot_name)
+
+def clean_snaptshots():
+    response = get_snapshots()
+    while (len(response['snapshots']) > settings.snaptshops_to_store):
+        delete_snapshot(response['snapshots'][0]['snapshot'])
+        response = get_snapshots()
 
 def main():
     check_connection()
