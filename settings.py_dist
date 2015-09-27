@@ -1,0 +1,11 @@
+#Server address
+server = "locahost"
+
+#Elasticsearch port
+port = 9200
+
+#The index to insert in the backup
+indexes = ["index1", "index2"]
+
+#The maximum numbers of snaspshots to store
+snaptshops_to_store = 5
