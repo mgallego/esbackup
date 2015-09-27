@@ -53,7 +53,7 @@ def delete_snapshot(snapshot_name):
 
 def clean_snaptshots():
     response = get_snapshots()
-    while (len(response['snapshots']) > settings.snaptshops_to_store):
+    while (len(response['snapshots']) > settings.snapshots_to_store):
         delete_snapshot(response['snapshots'][0]['snapshot'])
         response = get_snapshots()
 

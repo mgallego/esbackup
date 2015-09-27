@@ -11,4 +11,4 @@ indices = ["index1", "index2"]
 repository_name = 'my_backup'
 
 #The maximum numbers of snaspshots to store
-snaptshops_to_store = 5
+snapshots_to_store = 5
