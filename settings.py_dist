@@ -5,7 +5,7 @@ server = "http://localhost"
 port = 9200
 
 #The index to insert in the backup
-indexes = ["index1", "index2"]
+indices = ["index1", "index2"]
 
 #Repository name
 repository_name = 'my_backup'

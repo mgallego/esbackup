@@ -1,5 +1,5 @@
 #!venv/bin/python
-import settings, requests
+import settings, requests, time, datetime, json
 
 url = settings.server + ':' + str(settings.port)
 
@@ -20,22 +20,34 @@ def check_repository():
         print '%s returns %s' %(repository_url, r.status_code)
         exit(1)
 
-def clean_snaptshops():
-    snapthost_url = url + '/_snapshot/'+settings.repository_name+'/_all'
-    r = requests.get(snapthost_url)
+def create_snapshot():
+    snapshot_name = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
+    snapshot_url = url + '/_snapshot/%s/%s?wait_for_completion=true' %(settings.repository_name, snapshot_name)
+    payload = {"indices": ','.join(settings.indices)}
+    r = requests.put(snapshot_url, data=json.dumps(payload))
+    response = r.json()
     if (200 != r.status_code):
-        print '%s returns %s' %(snapthost_url, r.status_code)
+        print '%s returns %s' %(snaptshot_url, r.status_code)
+        print response
+        exit(1)
+    print 'Created the new %s snaptshot' %(snapshot_name)
+
+def clean_snaptshots():
+    snaptshots_url = url + '/_snapshot/'+settings.repository_name+'/_all'
+    r = requests.get(snaptshots_url)
+    if (200 != r.status_code):
+        print '%s returns %s' %(snaptshots_url, r.status_code)
         exit(1)
     response = r.json()
     if (len(response['snapshots']) > settings.snaptshops_to_store):
         print 'Remove old snapshots'
+    print len(response['snapshots'])
 
 def main():
     check_connection()
     check_repository()
-    clean_snaptshops()
-
+    create_snapshot()
+    clean_snaptshots()
 
 if __name__ == "__main__":
     main()
-
