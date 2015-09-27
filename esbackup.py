@@ -13,7 +13,14 @@ def check_connection():
         print 'Your Elasticsearch version (%s) is not compatible with snaptshots' %(response['version']['number'])
         exit(1)
 
-def get_snaptshops():
+def check_repository():
+    repository_url = url + '/_snapshot/'+settings.repository_name
+    r = requests.get(repository_url)
+    if (200 != r.status_code):
+        print '%s returns %s' %(repository_url, r.status_code)
+        exit(1)
+
+def clean_snaptshops():
     snapthost_url = url + '/_snapshot/'+settings.repository_name+'/_all'
     r = requests.get(snapthost_url)
     if (200 != r.status_code):
@@ -23,12 +30,11 @@ def get_snaptshops():
     if (len(response['snapshots']) > settings.snaptshops_to_store):
         print 'Remove old snapshots'
 
-    print len(response['snapshots'])
-
 def main():
     check_connection()
-    get_snaptshops()
-    create_snapshot()
+    check_repository()
+    clean_snaptshops()
+
 
 if __name__ == "__main__":
     main()
